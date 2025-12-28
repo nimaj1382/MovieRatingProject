@@ -21,3 +21,8 @@ class Movie(Base):
         "Director",
         back_populates="movies",
     )
+    genres = relationship(
+        "Genre",
+        secondary=movie_genre_association,
+        back_populates="movies",
+    )
