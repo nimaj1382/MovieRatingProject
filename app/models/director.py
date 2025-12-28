@@ -1,0 +1,15 @@
+from sqlalchemy import Column, Integer, String, Table, DateTime, ForeignKey
+from sqlalchemy.orm import relationship, declarative_base
+from .associations import movie_genre_association
+
+Base = declarative_base()
+
+
+class Director(Base):
+    __tablename__ = 'directors'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(Integer, index=True, nullable=False)
+    birth_year = Column(DateTime)
+
+    movies = relationship("Movie", back_populates="director")
