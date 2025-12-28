@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:15-alpine  # or use a specific version like postgres:15
+    container_name: movie_db  # optional: custom container name
+    environment:
+      POSTGRES_USER: postgres       # Database username
+      POSTGRES_PASSWORD: password   # Database password
+      POSTGRES_DB: movie_db           # Default database name
+    ports:
+      - "65432:5432"  # Host:Container port mapping
+    restart: unless-stopped  # Auto-restart policy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d movie_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:  # Named volume for data persistence
