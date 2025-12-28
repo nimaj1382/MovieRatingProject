@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Table, DateTime, ForeignKey
 from sqlalchemy.orm import relationship, declarative_base
 from .associations import movie_genre_association
 
-Base = declarative_base()
+from app.db.base import Base
 
 
 class Director(Base):
