@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Table, DateTime, ForeignKey
 from sqlalchemy.orm import relationship, declarative_base
-from .associations import movie_genre_association
+from .associations import MovieGenreAssociation
 
 from app.db.base import Base
 
@@ -23,7 +23,7 @@ class Movie(Base):
     )
     genres = relationship(
         "Genre",
-        secondary=movie_genre_association,
+        secondary="movie_genre_association",
         back_populates="movies",
     )
     ratings = relationship(
