@@ -64,14 +64,14 @@ class MovieRepository:
             List of Movie instances matching criteria.
         """
         query = self.session.query(Movie)
-        query = query.join(Movie.director)
-        query = query.join(Movie.genres)
         if title:
             query = query.filter(Movie.title.ilike(f"%{title}%"))
         if director:
+            query = query.join(Movie.director)
             query = query.filter(Director.name.ilike(f"%{director}%"))
         if release_year:
             query = query.filter(Movie.release_year == release_year)
         if genre:
+            query = query.join(Movie.genres)
             query = query.filter(Genre.name == genre)
         return query.all()
