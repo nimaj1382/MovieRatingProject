@@ -25,3 +25,25 @@ class GenreService:
         new_genre = Genre(name=name, description=description)
         self.genre_repository.add(new_genre)
         return new_genre
+
+    def genre_names_to_genre_list(self, genre_names: list[str]) -> list[Genre]:
+        """Convert a list of genre names to a list of Genre objects."""
+        genres = []
+        for name in genre_names:
+            genre = self.get_genre_by_name(name)
+            if genre:
+                genres.append(genre)
+            else:
+                raise ExistanceError(f"Genre with name '{name}' does not exist.")
+        return genres
+
+    def genre_ids_to_genre_list(self, genre_ids: list[int]) -> list[Genre]:
+        """Convert a list of genre IDs to a list of Genre objects."""
+        genres = []
+        for genre_id in genre_ids:
+            genre = self.get_genre_by_id(genre_id)
+            if genre:
+                genres.append(genre)
+            else:
+                raise ExistanceError(f"Genre with ID '{genre_id}' does not exist.")
+        return genres
