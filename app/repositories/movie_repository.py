@@ -2,7 +2,7 @@ from typing import Optional, Type
 
 from sqlalchemy.orm import Session
 
-from app.models import Movie, Genre
+from app.models import Movie, Genre, Director
 
 class MovieRepository:
     """Repository encapsulating database operations for Movie.
@@ -64,12 +64,14 @@ class MovieRepository:
             List of Movie instances matching criteria.
         """
         query = self.session.query(Movie)
+        query = query.join(Movie.director)
+        query = query.join(Movie.genres)
         if title:
             query = query.filter(Movie.title.ilike(f"%{title}%"))
         if director:
-            query = query.filter(Movie.director.ilike(f"%{director}%"))
+            query = query.filter(Director.name.ilike(f"%{director}%"))
         if release_year:
             query = query.filter(Movie.release_year == release_year)
         if genre:
-            query = query.filter(Movie.genres.contains(genre))
+            query = query.filter(Genre.name == genre)
         return query.all()
