@@ -9,7 +9,7 @@ class Movie(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, unique=True, nullable=False, index=True)
-    release_year = Column(DateTime)
+    release_year = Column(Integer)
     cast = Column(String)
     director_id = Column(
         Integer,
@@ -25,4 +25,9 @@ class Movie(Base):
         "Genre",
         secondary=movie_genre_association,
         back_populates="movies",
+    )
+    ratings = relationship(
+        "Rating",
+        back_populates="movie",
+        cascade="all, delete-orphan"
     )
