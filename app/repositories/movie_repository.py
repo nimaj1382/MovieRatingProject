@@ -2,7 +2,7 @@ from typing import Optional, Type
 
 from sqlalchemy.orm import Session
 
-from app.models import Movie, Genre, Director
+from app.models import Movie, Genre, Director, MovieGenreAssociation
 
 class MovieRepository:
     """Repository encapsulating database operations for Movie.
@@ -75,3 +75,13 @@ class MovieRepository:
             query = query.join(Movie.genres)
             query = query.filter(Genre.name == genre)
         return query.all()
+
+    def add_genre_to_movie(self, movie: Movie, genre: Genre) -> None:
+        """Associate a genre with a movie.
+
+        Args:
+            movie: Movie instance to update.
+            genre: Genre instance to associate.
+        """
+        self.session.add(MovieGenreAssociation(movie_id=movie.id, genre_id=genre.id))
+        self.session.commit()
