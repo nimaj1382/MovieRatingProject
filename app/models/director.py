@@ -10,6 +10,6 @@ class Director(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(Integer, index=True, nullable=False)
-    birth_year = Column(DateTime)
+    birth_year = Column(Integer)
 
     movies = relationship("Movie", back_populates="director")
