@@ -47,3 +47,8 @@ class GenreService:
             else:
                 raise ExistanceError(f"Genre with ID '{genre_id}' does not exist.")
         return genres
+
+    @staticmethod
+    def genre_list_to_genre_names(genres: list[Genre]) -> list[str]:
+        """Convert a list of Genre objects to a list of genre names."""
+        return [genre.name for genre in genres]
