@@ -30,7 +30,7 @@ def get_movie_service(db: Session = Depends(get_db)) -> MovieService:
         db = next(get_db())
     movie_repo = MovieRepository(db)
     director_repo = DirectorRepository(db)
-    return MovieService(movie_repo)
+    return MovieService(movie_repo, director_repo)
 
 def get_director_service(db: Session = Depends(get_db)) -> DirectorService:
     """Dependency for getting DirectorService.
