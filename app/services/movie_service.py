@@ -56,6 +56,7 @@ class MovieService:
     def create_movie(self, title: str,
                      director_id: int,
                      release_year: int = None,
+                     cast: str = None,
                      genre: List[Genre] = [],
                      ) -> Movie:
         existing_movie = self.get_movie_by_title(title)
@@ -68,6 +69,7 @@ class MovieService:
             title=title,
             director_id=director_id,
             release_year=release_year,
+            cast=cast,
         )
         self.movie_repository.add(new_movie)
         for g in genre:

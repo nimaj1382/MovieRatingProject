@@ -11,6 +11,7 @@ class MovieBase(BaseModel):
     title: str = Field(..., max_length=100, description="Movie title (max 100 characters)")
     director: DirectorResponse = Field(..., description="Director of the movie")
     release_year: Optional[int] = Field(None, ge=1888, le=2100, description="Year the movie was released")
+    cast: Optional[str] = Field(None, description="Cast of the movie")
     genres: list[str] = Field([], description="List of genre IDs associated with the movie")
 
 class MovieResponse(MovieBase):

@@ -176,6 +176,7 @@ async def create_movie(
             title=movie_create.title,
             director_id=movie_create.director_id,
             release_year=movie_create.release_year,
+            cast=movie_create.cast,
             genre=genre_service.genre_ids_to_genre_list(movie_create.genres),
         )
     except UniquenessError as e:
