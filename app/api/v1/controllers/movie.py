@@ -163,6 +163,7 @@ async def create_movie(
     Args:
         movie_create: The movie creation data.
         movie_service: The MovieService dependency.
+        genre_service: The GenreService dependency.
     Returns:
         The created movie.
     Raises:
