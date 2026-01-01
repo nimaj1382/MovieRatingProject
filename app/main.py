@@ -48,7 +48,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
             "status": "failure",
             "error": {
                 "code": 422,
-                "message": str(exc)
+                "message": str(exc.errors())
             }
         }
     )
