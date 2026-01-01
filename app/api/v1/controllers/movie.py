@@ -145,3 +145,51 @@ async def get_movie_by_id(
         status="success",
         data=movie_response
     )
+
+
+@router.post(
+    "/",
+    response_model = ResponseModel,
+    status_code = status.HTTP_201_CREATED,
+    summary = "Create a new movie",
+    description = "Create a new movie with the provided information."
+)
+async def create_movie(
+        movie_create: MovieCreate,
+        movie_service: MovieService = Depends(get_movie_service),
+        genre_service: GenreService = Depends(get_genre_service)
+) -> ResponseModel:
+    """Create a new movie.
+    Args:
+        movie_create: The movie creation data.
+        movie_service: The MovieService dependency.
+    Returns:
+        The created movie.
+    Raises:
+        HTTPException: 400 if movie with the same title already exists
+        HTTPException: 404 if director does not exist
+        HTTPException: 422 for validation errors
+    """
+    try:
+        new_movie = movie_service.create_movie(
+            title=movie_create.title,
+            director_id=movie_create.director_id,
+            release_year=movie_create.release_year,
+            genre=genre_service.genre_ids_to_genre_list(movie_create.genre_ids),
+        )
+    except UniquenessError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except ExistanceError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+
+    movie_response = MovieResponse.model_validate(new_movie).model_dump()
+    return ResponseModel(
+        status="success",
+        data=movie_response
+    )
