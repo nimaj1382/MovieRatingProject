@@ -1,15 +1,17 @@
 from typing import Optional, Type, List
 
 from app.models import Movie, Genre
-from app.repositories import MovieRepository
-from app.exceptions.service_exception import ExistanceError
+from app.repositories import MovieRepository, DirectorRepository
+from app.exceptions.service_exception import *
 
 
 class MovieService:
     """Service layer for Movie-related operations."""
-    def __init__(self, movie_repository: MovieRepository):
+    def __init__(self, movie_repository: MovieRepository,
+                 director_repository: DirectorRepository = None):
         """Initialize the MovieService with a MovieRepository."""
         self.movie_repository = movie_repository
+        self.director_repository = director_repository
 
     def get_movie_by_id(self, movie_id: int) -> Optional[Movie]:
         return self.movie_repository.get_by_id(movie_id)
@@ -56,10 +58,12 @@ class MovieService:
                      release_year: int = None,
                      genre: List[Genre] = [],
                      ) -> Movie:
-        # Check if movie already exists
         existing_movie = self.get_movie_by_title(title)
         if existing_movie:
-            raise ExistanceError(f"Movie with title '{title}' already exists.")
+            raise UniquenessError(f"Movie with title '{title}' already exists.")
+        director = self.director_repository.get_by_id(director_id)
+        if not director:
+            raise ExistanceError(f"Director with ID '{director_id}' does not exist.")
         new_movie = Movie(
             title=title,
             director_id=director_id,
