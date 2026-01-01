@@ -35,6 +35,8 @@ class MovieService:
     def paginator(input_list: list[Type[Movie]], page: int, page_size: int) -> list[Type[Movie]]:
         """Utility function to paginate a list of items."""
         # Check if page and page_size are valid
+        if len(input_list) == 0:
+            return []
         if page < 1 or page_size < 1:
             raise ValueError("Page and page_size must be positive integers.")
         max_page = (len(input_list) + page_size - 1) // page_size
