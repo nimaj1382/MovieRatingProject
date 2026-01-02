@@ -252,3 +252,31 @@ async def update_movie(
     )
 
 
+@router.delete(
+    "/{movie_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a movie",
+    description="Delete a movie from the system."
+)
+async def delete_movie(
+        movie_id: int,
+        movie_service: MovieService = Depends(get_movie_service)
+):
+    """Delete a movie by ID.
+    Args:
+        movie_id: The movie ID
+        movie_service: The MovieService dependency.
+    Raises:
+        HTTPException: 404 if movie not found
+    """
+    try:
+        movie_service.delete_movie(movie_id)
+    except ExistanceError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    # Return nothing for 204 No Content
+    return None
+
+
