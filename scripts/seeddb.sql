@@ -5,7 +5,7 @@
 -- Run with psql: psql -U movieuser -d moviedb -h localhost -f script.sql
 
 BEGIN;
-
+SET CLIENT_ENCODING TO 'UTF8';
 ------------------------------- 1. Cleanup Existing Data -----------------------------
 -- Delete existing data from final tables to ensure a clean run.
 DELETE FROM movie_ratings;
