@@ -75,3 +75,58 @@ class MovieService:
         for g in genre:
             self.movie_repository.add_genre_to_movie(new_movie, g)
         return new_movie
+
+    def update_movie(self, movie_id: int,
+                     title: str = None,
+                     director_id: int = None,
+                     release_year: int = None,
+                     cast: str = None,
+                     genres: List[Genre] = None) -> Movie:
+        """Update an existing movie.
+        
+        Args:
+            movie_id: ID of the movie to update
+            title: New title (optional)
+            director_id: New director ID (optional)
+            release_year: New release year (optional)
+            cast: New cast (optional)
+            genres: New list of genres (optional)
+            
+        Returns:
+            Updated Movie instance
+            
+        Raises:
+            ExistanceError: If movie or director does not exist
+            UniquenessError: If new title conflicts with existing movie
+        """
+        movie = self.get_movie_by_id(movie_id)
+        if not movie:
+            raise ExistanceError(f"Movie with ID '{movie_id}' does not exist.")
+        
+        # Update title if provided
+        if title is not None and title != movie.title:
+            existing_movie = self.get_movie_by_title(title)
+            if existing_movie:
+                raise UniquenessError(f"Movie with title '{title}' already exists.")
+            movie.title = title
+        
+        # Update director if provided
+        if director_id is not None:
+            director = self.director_repository.get_by_id(director_id)
+            if not director:
+                raise ExistanceError(f"Director with ID '{director_id}' does not exist.")
+            movie.director_id = director_id
+        
+        # Update other fields if provided
+        if release_year is not None:
+            movie.release_year = release_year
+        if cast is not None:
+            movie.cast = cast
+        
+        # Update genres if provided
+        if genres is not None:
+            self.movie_repository.update_movie_genres(movie, genres)
+        
+        self.movie_repository.update(movie)
+        return movie
+
