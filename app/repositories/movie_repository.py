@@ -94,6 +94,15 @@ class MovieRepository:
         """
         self.session.commit()
 
+    def delete(self, movie: Movie) -> None:
+        """Delete a movie from the database.
+
+        Args:
+            movie: Movie instance to delete.
+        """
+        self.session.delete(movie)
+        self.session.commit()
+
     def update_movie_genres(self, movie: Movie, genres: list[Genre]) -> None:
         """Update the genres associated with a movie.
 
