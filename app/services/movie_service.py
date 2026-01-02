@@ -143,3 +143,7 @@ class MovieService:
         if not movie:
             raise ExistanceError(f"Movie with ID '{movie_id}' does not exist.")
         self.movie_repository.delete(movie)
+
+    def count_movies(self) -> int:
+        """Return the total number of movies."""
+        return self.movie_repository.count()
