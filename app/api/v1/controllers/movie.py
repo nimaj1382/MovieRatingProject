@@ -103,6 +103,7 @@ async def list_movies(
 
     movies = movie_service.get_movies(
         page=page,
+        page_size=page_size,
         title=title,
         release_year=release_year,
         director_name=director_name,
