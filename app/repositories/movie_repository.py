@@ -85,3 +85,38 @@ class MovieRepository:
         """
         self.session.add(MovieGenreAssociation(movie_id=movie.id, genre_id=genre.id))
         self.session.commit()
+
+    def update(self, movie: Movie) -> None:
+        """Update an existing movie.
+
+        Args:
+            movie: Movie instance to update.
+        """
+        self.session.commit()
+
+    def delete(self, movie: Movie) -> None:
+        """Delete a movie from the database.
+
+        Args:
+            movie: Movie instance to delete.
+        """
+        self.session.delete(movie)
+        self.session.commit()
+
+    def update_movie_genres(self, movie: Movie, genres: list[Genre]) -> None:
+        """Update the genres associated with a movie.
+
+        Args:
+            movie: Movie instance to update.
+            genres: List of Genre instances to associate with the movie.
+        """
+        # Remove existing genre associations
+        self.session.query(MovieGenreAssociation).filter(
+            MovieGenreAssociation.movie_id == movie.id
+        ).delete()
+        
+        # Add new genre associations
+        for genre in genres:
+            self.session.add(MovieGenreAssociation(movie_id=movie.id, genre_id=genre.id))
+        
+        self.session.commit()

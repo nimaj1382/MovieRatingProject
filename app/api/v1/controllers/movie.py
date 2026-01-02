@@ -195,3 +195,132 @@ async def create_movie(
         status="success",
         data=movie_response
     )
+@router.put(
+    "/{movie_id}",
+    response_model=ResponseModel,
+    summary="Update a movie",
+    description="Update an existing movie with the provided information."
+)
+async def update_movie(
+        movie_id: int,
+        movie_update: MovieUpdate,
+        movie_service: MovieService = Depends(get_movie_service),
+        genre_service: GenreService = Depends(get_genre_service)
+) -> ResponseModel:
+    """Update an existing movie.
+    Args:
+        movie_id: The movie ID
+        movie_update: The movie update data.
+        movie_service: The MovieService dependency.
+        genre_service: The GenreService dependency.
+    Returns:
+        The updated movie.
+    Raises:
+        HTTPException: 404 if movie or director not found
+        HTTPException: 400 if new title conflicts with existing movie
+        HTTPException: 422 for validation errors
+    """
+    try:
+        # Convert genre IDs to Genre objects if provided
+        genres = None
+        if movie_update.genres is not None:
+            genres = genre_service.genre_ids_to_genre_list(movie_update.genres)
+        
+        updated_movie = movie_service.update_movie(
+            movie_id=movie_id,
+            title=movie_update.title,
+            director_id=movie_update.director_id,
+            release_year=movie_update.release_year,
+            cast=movie_update.cast,
+            genres=genres
+        )
+    except ExistanceError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except UniquenessError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+    movie_response = MovieResponse.model_validate(updated_movie).model_dump()
+    return ResponseModel(
+        status="success",
+        data=movie_response
+    )
+
+
+@router.delete(
+    "/{movie_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a movie",
+    description="Delete a movie from the system."
+)
+async def delete_movie(
+        movie_id: int,
+        movie_service: MovieService = Depends(get_movie_service)
+):
+    """Delete a movie by ID.
+    Args:
+        movie_id: The movie ID
+        movie_service: The MovieService dependency.
+    Raises:
+        HTTPException: 404 if movie not found
+    """
+    try:
+        movie_service.delete_movie(movie_id)
+    except ExistanceError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    # Return nothing for 204 No Content
+    return None
+
+
+@router.post(
+    "/{movie_id}/ratings",
+    response_model=ResponseModel,
+    status_code=status.HTTP_201_CREATED,
+    summary="Add a rating to a movie",
+    description="Submit a new rating for a specific movie."
+)
+async def create_rating(
+        movie_id: int,
+        rating_create: RatingCreate,
+        rating_service: RatingService = Depends(get_rating_service)
+) -> ResponseModel:
+    """Create a new rating for a movie.
+    Args:
+        movie_id: The movie ID
+        rating_create: The rating creation data.
+        rating_service: The RatingService dependency.
+    Returns:
+        The created rating.
+    Raises:
+        HTTPException: 404 if movie not found
+        HTTPException: 422 if score is invalid
+    """
+    try:
+        new_rating = rating_service.create_rating(
+            movie_id=movie_id,
+            score=rating_create.score
+        )
+    except ExistanceError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
+
+    rating_response = RatingResponse.model_validate(new_rating).model_dump()
+    return ResponseModel(
+        status="success",
+        data=rating_response
+    )

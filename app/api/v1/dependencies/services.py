@@ -55,3 +55,16 @@ def get_genre_service(db: Session = Depends(get_db)) -> GenreService:
         db = next(get_db())
     genre_repo = GenreRepository(db)
     return GenreService(genre_repo)
+
+def get_rating_service(db: Session = Depends(get_db)) -> RatingService:
+    """Dependency for getting RatingService.
+
+    Args:
+        db: Database session (injected by FastAPI)
+    Returns:
+        RatingService instance with repository dependencies."""
+    if db is None:
+        db = next(get_db())
+    rating_repo = RatingRepository(db)
+    movie_repo = MovieRepository(db)
+    return RatingService(rating_repo, movie_repo)
