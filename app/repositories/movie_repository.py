@@ -85,3 +85,12 @@ class MovieRepository:
         """
         self.session.add(MovieGenreAssociation(movie_id=movie.id, genre_id=genre.id))
         self.session.commit()
+
+    def update(self, movie: Movie) -> None:
+        """Update an existing movie.
+
+        Args:
+            movie: Movie instance to update.
+        """
+        self.session.commit()
+
