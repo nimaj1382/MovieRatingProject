@@ -130,3 +130,16 @@ class MovieService:
         self.movie_repository.update(movie)
         return movie
 
+    def delete_movie(self, movie_id: int) -> None:
+        """Delete a movie by ID.
+        
+        Args:
+            movie_id: ID of the movie to delete
+            
+        Raises:
+            ExistanceError: If movie does not exist
+        """
+        movie = self.get_movie_by_id(movie_id)
+        if not movie:
+            raise ExistanceError(f"Movie with ID '{movie_id}' does not exist.")
+        self.movie_repository.delete(movie)
