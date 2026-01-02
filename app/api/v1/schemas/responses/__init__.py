@@ -1,6 +1,7 @@
 from .director import DirectorBase, DirectorResponse
 from .movie import MovieBase, MovieResponse
 from .response import ResponseModel
+from .rating import RatingResponse
 
 
 __all__ = [
@@ -8,5 +9,6 @@ __all__ = [
     "DirectorResponse",
     "MovieBase",
     "MovieResponse",
-    "ResponseModel"
+    "ResponseModel",
+    "RatingResponse",
 ]
