@@ -1,11 +1,13 @@
 services:
-  postgres:
+  db:
     image: postgres:15-alpine  # or use a specific version like postgres:15
     container_name: movie_db  # optional: custom container name
     environment:
       POSTGRES_USER: postgres       # Database username
       POSTGRES_PASSWORD: password   # Database password
       POSTGRES_DB: movie_db           # Default database name
+    volumes:
+        - postgres_data:/var/lib/postgresql/data  # Persist data
     ports:
       - "65432:5432"  # Host:Container port mapping
     restart: unless-stopped  # Auto-restart policy
@@ -14,6 +16,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  app:
+    build: .
+    container_name: movie_app  # optional: custom container name
+    environment:
+      DATABASE_URL: postgresql://postgres:password@db:5432/movie_db  # Connection string to the database
+    ports:
+      - "8000:8000"  # Host:Container port mapping
+    depends_on:
+      - db
 
 volumes:
   postgres_data:  # Named volume for data persistence
