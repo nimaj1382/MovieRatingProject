@@ -120,3 +120,11 @@ class MovieRepository:
             self.session.add(MovieGenreAssociation(movie_id=movie.id, genre_id=genre.id))
         
         self.session.commit()
+
+    def count(self):
+        """Count total number of movies in the database.
+
+        Returns:
+            Total count of Movie instances.
+        """
+        return self.session.query(Movie).count()

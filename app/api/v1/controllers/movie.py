@@ -111,10 +111,10 @@ async def list_movies(
     )
 
     movie_responses = [MovieResponse.model_validate(movie) for movie in movies]
-    
+    total_items = movie_service.count_movies()
     # Log successful retrieval
     logger.info(
-        f"Movies retrieved successfully (total_items={len(movie_responses)}, "
+        f"Movies retrieved successfully (total_items={total_items}, "
         f"page={page}, page_size={page_size})"
     )
     
@@ -123,7 +123,7 @@ async def list_movies(
         data={
             "page": page,
             "page_size": page_size,
-            "total_items": len(movie_responses),
+            "total_items": total_items,
             "items": movie_responses
         }
     )
