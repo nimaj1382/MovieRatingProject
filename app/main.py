@@ -8,6 +8,11 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.api.v1 import api_router
 from app.db.base import Base
 from app.db.session import engine
+from app.utils.logging_config import logger
+
+
+# Initialize logging
+logger.info("Initializing Movie Rating API...")
 
 
 # Create database tables
@@ -22,6 +27,8 @@ app = FastAPI(
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json"
 )
+
+logger.info("Movie Rating API initialized successfully")
 
 app.exception_handlers = {}
 

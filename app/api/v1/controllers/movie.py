@@ -2,7 +2,7 @@ import os
 from typing import List, Optional
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
@@ -12,6 +12,7 @@ from app.exceptions import *
 from app.services import *
 from app.exceptions import *
 from app.models import *
+from app.utils.logging_config import logger
 
 router = APIRouter(
     prefix = "/movies",
@@ -48,6 +49,13 @@ async def list_movies(
     Returns:
         List of movies with their basic information.
     """
+    # Log the incoming request
+    logger.info(
+        f"Listing movies (page={page}, page_size={page_size}, "
+        f"title={title}, release_year={release_year}, "
+        f"director_name={director_name}, genre={genre}, route=/api/v1/movies)"
+    )
+    
     # Check for validation of query parameters if needed
     # In case it's not valid, give an error response with structure of HttpError model
 
@@ -102,6 +110,13 @@ async def list_movies(
     )
 
     movie_responses = [MovieResponse.model_validate(movie) for movie in movies]
+    
+    # Log successful retrieval
+    logger.info(
+        f"Movies retrieved successfully (total_items={len(movie_responses)}, "
+        f"page={page}, page_size={page_size})"
+    )
+    
     return ResponseModel(
         status="success",
         data={
@@ -303,21 +318,48 @@ async def create_rating(
         HTTPException: 404 if movie not found
         HTTPException: 422 if score is invalid
     """
+    # Log the incoming rating request
+    logger.info(
+        f"Rating movie (movie_id={movie_id}, rating={rating_create.score}, "
+        f"route=/api/v1/movies/{movie_id}/ratings)"
+    )
+    
     try:
         new_rating = rating_service.create_rating(
             movie_id=movie_id,
             score=rating_create.score
         )
+        
+        # Log successful rating save
+        logger.info(
+            f"Rating saved successfully (movie_id={movie_id}, rating={rating_create.score})"
+        )
+        
     except ExistanceError as e:
+        # Log error when movie doesn't exist
+        logger.error(
+            f"Failed to save rating - movie not found (movie_id={movie_id}, rating={rating_create.score})"
+        )
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e)
         )
     except ValueError as e:
+        # Log warning for invalid rating value
+        logger.warning(
+            f"Invalid rating value (movie_id={movie_id}, rating={rating_create.score}, "
+            f"route=/api/v1/movies/{movie_id}/ratings)"
+        )
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(e)
         )
+    except Exception as e:
+        # Log any unexpected errors
+        logger.error(
+            f"Failed to save rating (movie_id={movie_id}, rating={rating_create.score}): {str(e)}"
+        )
+        raise
 
     rating_response = RatingResponse.model_validate(new_rating).model_dump()
     return ResponseModel(
