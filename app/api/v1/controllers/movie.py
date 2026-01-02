@@ -280,3 +280,47 @@ async def delete_movie(
     return None
 
 
+@router.post(
+    "/{movie_id}/ratings",
+    response_model=ResponseModel,
+    status_code=status.HTTP_201_CREATED,
+    summary="Add a rating to a movie",
+    description="Submit a new rating for a specific movie."
+)
+async def create_rating(
+        movie_id: int,
+        rating_create: RatingCreate,
+        rating_service: RatingService = Depends(get_rating_service)
+) -> ResponseModel:
+    """Create a new rating for a movie.
+    Args:
+        movie_id: The movie ID
+        rating_create: The rating creation data.
+        rating_service: The RatingService dependency.
+    Returns:
+        The created rating.
+    Raises:
+        HTTPException: 404 if movie not found
+        HTTPException: 422 if score is invalid
+    """
+    try:
+        new_rating = rating_service.create_rating(
+            movie_id=movie_id,
+            score=rating_create.score
+        )
+    except ExistanceError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
+
+    rating_response = RatingResponse.model_validate(new_rating).model_dump()
+    return ResponseModel(
+        status="success",
+        data=rating_response
+    )
